@@ -111,6 +111,13 @@ func (db *DB) OrderByStruct(v interface{}, orderName, orderType string) (tx *DB)
 	return
 }
 
+// Select specify fields that you want when querying, creating, updating
+func (db *DB) SelectByStruct(v interface{}, args ...interface{}) (tx *DB) {
+	tx = db.getInstance()
+	tx.Select(structToTag(v))
+	return
+}
+
 func orderByString(field []string, sortName, sortOrder string) (string, string) {
 	if len(field) <= 0 || sortName == "" || sortOrder == "" {
 		return "", ""
@@ -128,20 +135,20 @@ func orderByString(field []string, sortName, sortOrder string) (string, string) 
 }
 
 // Struct Tag
-//func structToTag(v interface{}) string {
-//	json := ""
-//	s := reflect.TypeOf(v).Elem() //通过反射获取type定义
-//	for i := 0; i < s.NumField(); i++ {
-//		var tag = getStructTagGorm(s.Field(i))
-//		if tag != "-" {
-//			json += getStructTagJson(s.Field(i))
-//			if i < s.NumField()-1 {
-//				json += ", "
-//			}
-//		}
-//	}
-//	return json
-//}
+func structToTag(v interface{}) string {
+	json := ""
+	s := reflect.TypeOf(v).Elem() //通过反射获取type定义
+	for i := 0; i < s.NumField(); i++ {
+		var tag = getStructTagGorm(s.Field(i))
+		if tag != "-" {
+			json += getStructTagJson(s.Field(i))
+			if i < s.NumField()-1 {
+				json += ", "
+			}
+		}
+	}
+	return json
+}
 
 func structToTagArray(v interface{}) []string {
 	json := make([]string, 0)
