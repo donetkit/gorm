@@ -134,6 +134,14 @@ func orderByString(field []string, sortName, sortOrder string) (string, string) 
 	return "", ""
 }
 
+// Delete delete value match given conditions, if the value has primary key, then will including the primary key as condition
+func (db *DB) DeleteByNil() (tx *DB) {
+	tx = db.getInstance()
+	tx.Statement.Dest = ""
+	tx.callbacks.Delete().Execute(tx)
+	return
+}
+
 // Struct Tag
 func structToTag(v interface{}) string {
 	json := ""
