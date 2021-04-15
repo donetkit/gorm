@@ -3,10 +3,10 @@ package callbacks
 import (
 	"reflect"
 
-	"github.com/donetkit/gorm"
-	"github.com/donetkit/gorm/clause"
-	"github.com/donetkit/gorm/schema"
-	"github.com/donetkit/gorm/utils"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"gorm.io/gorm/schema"
+	"gorm.io/gorm/utils"
 )
 
 func preload(db *gorm.DB, rel *schema.Relationship, conds []interface{}, preloads map[string][]interface{}) {

@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/donetkit/gorm/clause"
+	"gorm.io/gorm/clause"
 )
 
 type GormDataTypeInterface interface {

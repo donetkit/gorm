@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/donetkit/gorm/schema"
+	"gorm.io/gorm/schema"
 )
 
 type UserIndex struct {

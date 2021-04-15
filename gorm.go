@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/donetkit/gorm/clause"
-	"github.com/donetkit/gorm/logger"
-	"github.com/donetkit/gorm/schema"
+	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
 // for Config.cacheStore store PreparedStmtDB key

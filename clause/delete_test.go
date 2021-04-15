@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/donetkit/gorm/clause"
+	"gorm.io/gorm/clause"
 )
 
 func TestDelete(t *testing.T) {

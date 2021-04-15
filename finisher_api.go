@@ -7,10 +7,10 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/donetkit/gorm/clause"
-	"github.com/donetkit/gorm/logger"
-	"github.com/donetkit/gorm/schema"
-	"github.com/donetkit/gorm/utils"
+	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
+	"gorm.io/gorm/utils"
 )
 
 // Create insert the value into database

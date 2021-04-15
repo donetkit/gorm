@@ -7,10 +7,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/donetkit/gorm"
-	"github.com/donetkit/gorm/clause"
-	"github.com/donetkit/gorm/schema"
-	"github.com/donetkit/gorm/utils/tests"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"gorm.io/gorm/schema"
+	"gorm.io/gorm/utils/tests"
 )
 
 func TestExpr(t *testing.T) {

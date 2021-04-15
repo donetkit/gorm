@@ -1,7 +1,7 @@
 package callbacks
 
 import (
-	"github.com/donetkit/gorm"
+	"gorm.io/gorm"
 )
 
 func BeginTransaction(db *gorm.DB) {

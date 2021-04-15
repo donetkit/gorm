@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/now"
-	"github.com/donetkit/gorm/utils"
+	"gorm.io/gorm/utils"
 )
 
 type DataType string

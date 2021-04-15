@@ -2,11 +2,15 @@ package gorm
 
 import (
 	"fmt"
-	"github.com/donetkit/gorm/clause"
+	"gorm.io/gorm/clause"
 	"reflect"
 	"strings"
 )
 
+const (
+	OrderByAsc  = "ASC"
+	OrderByDesc = "DESC"
+)
 
 // Limit specify the number of records to be retrieved
 func (db *DB) Page(pageIndex, pageSize int) (tx *DB) {
@@ -39,9 +43,9 @@ func (db *DB) OrderBy(orderName, orderType string) (tx *DB) {
 	if orderName == "" {
 		return
 	}
-	orderTypes := "asc"
-    if orderType == "desc" {
-		orderTypes = "desc"
+	orderTypes := "ASC"
+	if strings.ToUpper(orderType) == "DESC" {
+		orderTypes = "DESC"
 	}
 	tx.Statement.AddClause(clause.OrderBy{
 		Columns: []clause.OrderByColumn{{
@@ -61,7 +65,7 @@ func (db *DB) OrderByAsc(orderName string) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.AddClause(clause.OrderBy{
 		Columns: []clause.OrderByColumn{{
-			Column: clause.Column{Name: fmt.Sprintf("%s %s", orderName, "asc"), Raw: true},
+			Column: clause.Column{Name: fmt.Sprintf("%s %s", orderName, "ASC"), Raw: true},
 		}},
 	})
 	return
@@ -77,7 +81,7 @@ func (db *DB) OrderByDesc(orderName string) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.AddClause(clause.OrderBy{
 		Columns: []clause.OrderByColumn{{
-			Column: clause.Column{Name: fmt.Sprintf("%s %s", orderName, "desc"), Raw: true},
+			Column: clause.Column{Name: fmt.Sprintf("%s %s", orderName, "DESC"), Raw: true},
 		}},
 	})
 	return
@@ -86,7 +90,7 @@ func (db *DB) OrderByDesc(orderName string) (tx *DB) {
 // Order specify order when retrieve records from database
 //     db.Order("name DESC")
 //     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
-func (db *DB) OrderByStruct(v interface{} , orderName, orderType string) (tx *DB) {
+func (db *DB) OrderByStruct(v interface{}, orderName, orderType string) (tx *DB) {
 	tx = db.getInstance()
 	if orderName == "" || orderType == "" {
 		return
@@ -95,9 +99,9 @@ func (db *DB) OrderByStruct(v interface{} , orderName, orderType string) (tx *DB
 	if orderName == "" {
 		return
 	}
-	orderTypes := "asc"
-	if orderType == "desc" {
-		orderTypes = "desc"
+	orderTypes := "ASC"
+	if strings.ToUpper(orderType) == "DESC" {
+		orderTypes = "DESC"
 	}
 	tx.Statement.AddClause(clause.OrderBy{
 		Columns: []clause.OrderByColumn{{
@@ -113,17 +117,15 @@ func orderByString(field []string, sortName, sortOrder string) (string, string) 
 	}
 	for _, val := range field {
 		if val == sortName {
-			var sortOrderData = "desc"
-			if strings.ToLower(sortOrder) == "asc" {
-				sortOrderData = "asc"
+			var sortOrderData = "DESC"
+			if strings.ToLower(sortOrder) == "ASC" {
+				sortOrderData = "ASC"
 			}
 			return sortName, sortOrderData
 		}
 	}
 	return "", ""
 }
-
-
 
 // Struct Tag
 //func structToTag(v interface{}) string {
@@ -152,7 +154,6 @@ func structToTagArray(v interface{}) []string {
 	}
 	return json
 }
-
 
 func getStructTagJson(f reflect.StructField) string {
 	return f.Tag.Get("json")

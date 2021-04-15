@@ -1,8 +1,8 @@
 package gorm
 
 import (
-	"github.com/donetkit/gorm/clause"
-	"github.com/donetkit/gorm/schema"
+	"gorm.io/gorm/clause"
+	"gorm.io/gorm/schema"
 )
 
 // Migrator returns migrator

@@ -1,6 +1,6 @@
 package callbacks
 
-import "github.com/donetkit/gorm"
+import "gorm.io/gorm"
 
 type BeforeCreateInterface interface {
 	BeforeCreate(*gorm.DB) error

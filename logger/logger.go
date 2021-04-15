@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/donetkit/gorm/utils"
+	"gorm.io/gorm/utils"
 )
 
 // Colors

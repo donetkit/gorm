@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/donetkit/gorm"
-	"github.com/donetkit/gorm/clause"
-	"github.com/donetkit/gorm/schema"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"gorm.io/gorm/schema"
 )
 
 func BeforeDelete(db *gorm.DB) {

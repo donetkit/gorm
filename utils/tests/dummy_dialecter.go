@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"github.com/donetkit/gorm"
-	"github.com/donetkit/gorm/clause"
-	"github.com/donetkit/gorm/logger"
-	"github.com/donetkit/gorm/schema"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
 type DummyDialector struct {
