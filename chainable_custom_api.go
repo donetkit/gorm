@@ -47,9 +47,10 @@ func (db *DB) OrderBy(orderName, orderType string) (tx *DB) {
 	if strings.ToUpper(orderType) == "DESC" {
 		orderTypes = "DESC"
 	}
+
 	tx.Statement.AddClause(clause.OrderBy{
 		Columns: []clause.OrderByColumn{{
-			Column: clause.Column{Name: fmt.Sprintf("%s %s", orderName, orderTypes), Raw: true},
+			Column: clause.Column{Name: fmt.Sprintf(" CONVERT(%s USING gbk) %s", orderName, orderTypes), Raw: true},
 		}},
 	})
 	return
@@ -65,7 +66,7 @@ func (db *DB) OrderByAsc(orderName string) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.AddClause(clause.OrderBy{
 		Columns: []clause.OrderByColumn{{
-			Column: clause.Column{Name: fmt.Sprintf("%s %s", orderName, "ASC"), Raw: true},
+			Column: clause.Column{Name: fmt.Sprintf(" CONVERT(%s USING gbk) %s", orderName, "ASC"), Raw: true},
 		}},
 	})
 	return
@@ -81,7 +82,7 @@ func (db *DB) OrderByDesc(orderName string) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.AddClause(clause.OrderBy{
 		Columns: []clause.OrderByColumn{{
-			Column: clause.Column{Name: fmt.Sprintf("%s %s", orderName, "DESC"), Raw: true},
+			Column: clause.Column{Name: fmt.Sprintf(" CONVERT(%s USING gbk) %s", orderName, "DESC"), Raw: true},
 		}},
 	})
 	return
@@ -105,7 +106,7 @@ func (db *DB) OrderByStruct(v interface{}, orderName, orderType string) (tx *DB)
 	}
 	tx.Statement.AddClause(clause.OrderBy{
 		Columns: []clause.OrderByColumn{{
-			Column: clause.Column{Name: fmt.Sprintf("%s %s", orderName, orderTypes), Raw: true},
+			Column: clause.Column{Name: fmt.Sprintf(" CONVERT(%s USING gbk) %s", orderName, orderTypes), Raw: true},
 		}},
 	})
 	return
