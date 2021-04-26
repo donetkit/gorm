@@ -126,7 +126,7 @@ func orderByString(field []string, sortName, sortOrder string) (string, string) 
 	for _, val := range field {
 		if val == sortName {
 			var sortOrderData = "DESC"
-			if strings.ToLower(sortOrder) == "ASC" {
+			if strings.ToUpper(sortOrder) == "ASC" {
 				sortOrderData = "ASC"
 			}
 			return sortName, sortOrderData
