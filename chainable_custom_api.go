@@ -12,6 +12,13 @@ const (
 	OrderByDesc = "DESC"
 )
 
+// Scan scan value to a struct
+func (db *DB) ScanOne(dest interface{}) (tx *DB) {
+	tx = db.getInstance()
+	tx.Limit(1).Scan(dest)
+	return
+}
+
 // Limit specify the number of records to be retrieved
 func (db *DB) Page(pageIndex, pageSize int) (tx *DB) {
 	if pageIndex < 1 {
