@@ -441,15 +441,8 @@ func (field *Field) setupValuerAndSetter() {
 	// ReflectValueOf
 	switch {
 	case len(field.StructField.Index) == 1:
-		if field.FieldType.Kind() == reflect.Ptr {
-			field.ReflectValueOf = func(value reflect.Value) reflect.Value {
-				fieldValue := reflect.Indirect(value).Field(field.StructField.Index[0])
-				return fieldValue
-			}
-		} else {
-			field.ReflectValueOf = func(value reflect.Value) reflect.Value {
-				return reflect.Indirect(value).Field(field.StructField.Index[0])
-			}
+		field.ReflectValueOf = func(value reflect.Value) reflect.Value {
+			return reflect.Indirect(value).Field(field.StructField.Index[0])
 		}
 	case len(field.StructField.Index) == 2 && field.StructField.Index[0] >= 0 && field.FieldType.Kind() != reflect.Ptr:
 		field.ReflectValueOf = func(value reflect.Value) reflect.Value {
@@ -486,17 +479,19 @@ func (field *Field) setupValuerAndSetter() {
 			field.ReflectValueOf(value).Set(reflect.New(field.FieldType).Elem())
 		} else {
 			reflectV := reflect.ValueOf(v)
+			// Optimal value type acquisition for v
+			reflectValType := reflectV.Type()
 
-			if reflectV.Type().AssignableTo(field.FieldType) {
+			if reflectValType.AssignableTo(field.FieldType) {
 				field.ReflectValueOf(value).Set(reflectV)
 				return
-			} else if reflectV.Type().ConvertibleTo(field.FieldType) {
+			} else if reflectValType.ConvertibleTo(field.FieldType) {
 				field.ReflectValueOf(value).Set(reflectV.Convert(field.FieldType))
 				return
 			} else if field.FieldType.Kind() == reflect.Ptr {
 				fieldValue := field.ReflectValueOf(value)
 
-				if reflectV.Type().AssignableTo(field.FieldType.Elem()) {
+				if reflectValType.AssignableTo(field.FieldType.Elem()) {
 					if !fieldValue.IsValid() {
 						fieldValue = reflect.New(field.FieldType.Elem())
 					} else if fieldValue.IsNil() {
@@ -504,7 +499,7 @@ func (field *Field) setupValuerAndSetter() {
 					}
 					fieldValue.Elem().Set(reflectV)
 					return
-				} else if reflectV.Type().ConvertibleTo(field.FieldType.Elem()) {
+				} else if reflectValType.ConvertibleTo(field.FieldType.Elem()) {
 					if fieldValue.IsNil() {
 						fieldValue.Set(reflect.New(field.FieldType.Elem()))
 					}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sort"
 	"sync"
 	"time"
 
@@ -111,13 +112,21 @@ type Session struct {
 func Open(dialector Dialector, opts ...Option) (db *DB, err error) {
 	config := &Config{}
 
+	sort.Slice(opts, func(i, j int) bool {
+		_, isConfig := opts[i].(*Config)
+		_, isConfig2 := opts[j].(*Config)
+		return isConfig && !isConfig2
+	})
+
 	for _, opt := range opts {
 		if opt != nil {
 			if err := opt.Apply(config); err != nil {
 				return nil, err
 			}
 			defer func(opt Option) {
-				opt.AfterInitialize(db)
+				if errr := opt.AfterInitialize(db); errr != nil {
+					err = errr
+				}
 			}(opt)
 		}
 	}
@@ -339,12 +348,12 @@ func (db *DB) DB() (*sql.DB, error) {
 		return sqldb, nil
 	}
 
-	return nil, ErrInvaildDB
+	return nil, ErrInvalidDB
 }
 
 func (db *DB) getInstance() *DB {
 	if db.clone > 0 {
-		tx := &DB{Config: db.Config}
+		tx := &DB{Config: db.Config, Error: db.Error}
 
 		if db.clone == 1 {
 			// clone with new statement

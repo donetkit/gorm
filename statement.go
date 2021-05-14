@@ -27,6 +27,7 @@ type Statement struct {
 	Dest                 interface{}
 	ReflectValue         reflect.Value
 	Clauses              map[string]clause.Clause
+	BuildClauses         []string
 	Distinct             bool
 	Selects              []string // selected columns
 	Omits                []string // omit columns
@@ -328,8 +329,10 @@ func (stmt *Statement) BuildCondition(query interface{}, args ...interface{}) []
 					} else if _, ok := v[key].(Valuer); ok {
 						conds = append(conds, clause.Eq{Column: key, Value: v[key]})
 					} else {
-						values := make([]interface{}, reflectValue.Len())
-						for i := 0; i < reflectValue.Len(); i++ {
+						// optimize reflect value length
+						valueLen := reflectValue.Len()
+						values := make([]interface{}, valueLen)
+						for i := 0; i < valueLen; i++ {
 							values[i] = reflectValue.Index(i).Interface()
 						}
 
@@ -396,8 +399,10 @@ func (stmt *Statement) BuildCondition(query interface{}, args ...interface{}) []
 				if len(args) == 1 {
 					switch reflectValue.Kind() {
 					case reflect.Slice, reflect.Array:
-						values := make([]interface{}, reflectValue.Len())
-						for i := 0; i < reflectValue.Len(); i++ {
+						// optimize reflect value length
+						valueLen := reflectValue.Len()
+						values := make([]interface{}, valueLen)
+						for i := 0; i < valueLen; i++ {
 							values[i] = reflectValue.Index(i).Interface()
 						}
 
@@ -533,6 +538,11 @@ func (stmt *Statement) SetColumn(name string, value interface{}, fromCallbacks .
 				default:
 					stmt.AddError(ErrInvalidData)
 				}
+			}
+
+			if !stmt.ReflectValue.CanAddr() {
+				stmt.AddError(ErrInvalidValue)
+				return
 			}
 
 			switch stmt.ReflectValue.Kind() {
