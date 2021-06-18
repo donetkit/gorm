@@ -157,11 +157,14 @@ func structToTag(v interface{}) string {
 	for i := 0; i < s.NumField(); i++ {
 		var tag = getStructTagGorm(s.Field(i))
 		if tag != "-" {
-			data := getStructTagJson(s.Field(i))
-			if data != "" {
-				jsonArray = append(jsonArray, data)
+			if tag != "" {
+				jsonArray = append(jsonArray, tag)
+			} else {
+				data := getStructTagJson(s.Field(i))
+				if data != "" {
+					jsonArray = append(jsonArray, data)
+				}
 			}
-
 		}
 	}
 	return strings.Join(jsonArray, " , ")
