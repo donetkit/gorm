@@ -152,6 +152,11 @@ func (db *DB) DeleteByNil() (tx *DB) {
 
 // Struct Tag
 func structToTag(v interface{}) string {
+	jsonArray := structToTagArray(v)
+	return strings.Join(jsonArray, " , ")
+}
+
+func structToTagArray(v interface{}) []string {
 	jsonArray := make([]string, 0)
 	s := reflect.TypeOf(v).Elem() //通过反射获取type定义
 	for i := 0; i < s.NumField(); i++ {
@@ -167,22 +172,7 @@ func structToTag(v interface{}) string {
 			}
 		}
 	}
-	return strings.Join(jsonArray, " , ")
-}
-
-func structToTagArray(v interface{}) []string {
-	json := make([]string, 0)
-	s := reflect.TypeOf(v).Elem() //通过反射获取type定义
-	for i := 0; i < s.NumField(); i++ {
-		var tag = getStructTagGorm(s.Field(i))
-		if tag != "-" {
-			data := getStructTagJson(s.Field(i))
-			if data != "" {
-				json = append(json, data)
-			}
-		}
-	}
-	return json
+	return jsonArray
 }
 
 func getStructTagJson(f reflect.StructField) string {
