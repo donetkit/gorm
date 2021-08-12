@@ -103,7 +103,7 @@ func (db *DB) OrderByStruct(v interface{}, orderName, orderType string) (tx *DB)
 	if orderName == "" || orderType == "" {
 		return
 	}
-	orderName, orderType = orderByString(structToTagArray(v), orderName, orderType)
+	orderName, orderType = orderByString(getStructFieldTagArray(v), orderName, orderType)
 	if orderName == "" {
 		return
 	}
@@ -152,33 +152,30 @@ func (db *DB) DeleteByNil() (tx *DB) {
 
 // Struct Tag
 func structToTag(v interface{}) string {
-	jsonArray := structToTagArray(v)
-	return strings.Join(jsonArray, " , ")
+	jsonArray := getStructFieldTagArray(v)
+	return strings.Join(jsonArray, ", ")
 }
 
-func structToTagArray(v interface{}) []string {
+func getStructFieldTagArray(v interface{}) []string {
 	jsonArray := make([]string, 0)
 	s := reflect.TypeOf(v).Elem() //通过反射获取type定义
 	for i := 0; i < s.NumField(); i++ {
-		var tag = getStructTagGorm(s.Field(i))
-		if tag != "-" {
-			if tag != "" {
-				jsonArray = append(jsonArray, tag)
-			} else {
-				data := getStructTagJson(s.Field(i))
-				if data != "" {
-					jsonArray = append(jsonArray, data)
-				}
-			}
+		var tag = getStructFieldTag(s.Field(i), "gorm")
+		if tag == "-" {
+			continue
+		}
+		if tag != "" {
+			jsonArray = append(jsonArray, tag)
+			continue
+		}
+		data := getStructFieldTag(s.Field(i), "json")
+		if data != "" {
+			jsonArray = append(jsonArray, data)
 		}
 	}
 	return jsonArray
 }
 
-func getStructTagJson(f reflect.StructField) string {
-	return f.Tag.Get("json")
-}
-
-func getStructTagGorm(f reflect.StructField) string {
-	return f.Tag.Get("gorm")
+func getStructFieldTag(f reflect.StructField, tag string) string {
+	return f.Tag.Get(tag)
 }
