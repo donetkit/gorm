@@ -89,6 +89,39 @@ func TestNamedExpr(t *testing.T) {
 		SQL:    "create table ? (? ?, ? ?)",
 		Vars:   []interface{}{},
 		Result: "create table ? (? ?, ? ?)",
+	}, {
+		SQL:          "name1 = @name AND name2 = @name;",
+		Vars:         []interface{}{sql.Named("name", "jinzhu")},
+		Result:       "name1 = ? AND name2 = ?;",
+		ExpectedVars: []interface{}{"jinzhu", "jinzhu"},
+	}, {
+		SQL:    "?",
+		Vars:   []interface{}{clause.Column{Table: "table", Name: "col"}},
+		Result: "`table`.`col`",
+	}, {
+		SQL:    "?",
+		Vars:   []interface{}{clause.Column{Table: "table", Name: "col", Raw: true}},
+		Result: "table.col",
+	}, {
+		SQL:    "?",
+		Vars:   []interface{}{clause.Column{Table: "table", Name: clause.PrimaryKey, Raw: true}},
+		Result: "table.id",
+	}, {
+		SQL:    "?",
+		Vars:   []interface{}{clause.Column{Table: "table", Name: "col", Alias: "alias"}},
+		Result: "`table`.`col` AS `alias`",
+	}, {
+		SQL:    "?",
+		Vars:   []interface{}{clause.Column{Table: "table", Name: "col", Alias: "alias", Raw: true}},
+		Result: "table.col AS alias",
+	}, {
+		SQL:    "?",
+		Vars:   []interface{}{clause.Table{Name: "table", Alias: "alias"}},
+		Result: "`table` `alias`",
+	}, {
+		SQL:    "?",
+		Vars:   []interface{}{clause.Table{Name: "table", Alias: "alias", Raw: true}},
+		Result: "table alias",
 	}}
 
 	for idx, result := range results {
@@ -156,6 +189,18 @@ func TestExpression(t *testing.T) {
 		},
 		ExpectedVars: []interface{}{"a", "b"},
 		Result:       "`column-name` NOT IN (?,?)",
+	}, {
+		Expressions: []clause.Expression{
+			clause.Eq{Column: clause.Expr{SQL: "SUM(?)", Vars: []interface{}{clause.Column{Name: "id"}}}, Value: 100},
+		},
+		ExpectedVars: []interface{}{100},
+		Result:       "SUM(`id`) = ?",
+	}, {
+		Expressions: []clause.Expression{
+			clause.Gte{Column: clause.Expr{SQL: "SUM(?)", Vars: []interface{}{clause.Column{Table: "users", Name: "id"}}}, Value: 100},
+		},
+		ExpectedVars: []interface{}{100},
+		Result:       "SUM(`users`.`id`) >= ?",
 	}}
 
 	for idx, result := range results {
