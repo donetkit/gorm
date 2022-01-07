@@ -168,8 +168,10 @@ func getStructFieldTagArray(v interface{}) []string {
 			jsonArray = append(jsonArray, tag)
 			continue
 		}
+		//json,omitempty
 		data := getStructFieldTag(s.Field(i), "json")
 		if data != "" {
+			data = strings.ReplaceAll(data,",omitempty","")
 			jsonArray = append(jsonArray, data)
 		}
 	}
