@@ -42,6 +42,42 @@ func (db *DB) PageLimit(pageIndex, pageSize int) (tx *DB) {
 	return
 }
 
+
+// Order specify order when retrieve records from database
+//     db.Order("name DESC")
+//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+func (db *DB) OrderByName(orderName string, desc bool) (tx *DB) {
+	if orderName == "" {
+		return
+	}
+	tx = db.getInstance()
+	tx.Statement.AddClause(clause.OrderBy{
+		Columns: []clause.OrderByColumn{clause.OrderByColumn{Column: clause.Column{Name: orderName}, Desc: desc}},
+	})
+	return
+}
+
+
+// Order specify order when retrieve records from database
+//     db.Order("name DESC")
+//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+func (db *DB) OrderByNameGbk(orderName string, desc bool) (tx *DB) {
+	if orderName == "" {
+		return
+	}
+	tx = db.getInstance()
+	orderTypes := "ASC"
+	if desc {
+		orderTypes = "DESC"
+	}
+	tx.Statement.AddClause(clause.OrderBy{
+		Columns: []clause.OrderByColumn{{
+			Column: clause.Column{Name: fmt.Sprintf("CONVERT(%s USING gbk) %s", orderName, orderTypes), Raw: true},
+		}},
+	})
+	return
+}
+
 // Order specify order when retrieve records from database
 //     db.Order("name DESC")
 //     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
