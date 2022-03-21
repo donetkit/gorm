@@ -1,6 +1,7 @@
 package schema_test
 
 import (
+	"context"
 	"database/sql"
 	"reflect"
 	"sync"
@@ -57,7 +58,7 @@ func TestFieldValuerAndSetter(t *testing.T) {
 	}
 
 	for k, v := range newValues {
-		if err := userSchema.FieldsByDBName[k].Set(reflectValue, v); err != nil {
+		if err := userSchema.FieldsByDBName[k].Set(context.Background(), reflectValue, v); err != nil {
 			t.Errorf("no error should happen when assign value to field %v, but got %v", k, err)
 		}
 	}
@@ -80,7 +81,7 @@ func TestFieldValuerAndSetter(t *testing.T) {
 	}
 
 	for k, v := range newValues2 {
-		if err := userSchema.FieldsByDBName[k].Set(reflectValue, v); err != nil {
+		if err := userSchema.FieldsByDBName[k].Set(context.Background(), reflectValue, v); err != nil {
 			t.Errorf("no error should happen when assign value to field %v, but got %v", k, err)
 		}
 	}
@@ -132,7 +133,7 @@ func TestPointerFieldValuerAndSetter(t *testing.T) {
 	}
 
 	for k, v := range newValues {
-		if err := userSchema.FieldsByDBName[k].Set(reflectValue, v); err != nil {
+		if err := userSchema.FieldsByDBName[k].Set(context.Background(), reflectValue, v); err != nil {
 			t.Errorf("no error should happen when assign value to field %v, but got %v", k, err)
 		}
 	}
@@ -151,7 +152,7 @@ func TestPointerFieldValuerAndSetter(t *testing.T) {
 	}
 
 	for k, v := range newValues2 {
-		if err := userSchema.FieldsByDBName[k].Set(reflectValue, v); err != nil {
+		if err := userSchema.FieldsByDBName[k].Set(context.Background(), reflectValue, v); err != nil {
 			t.Errorf("no error should happen when assign value to field %v, but got %v", k, err)
 		}
 	}
@@ -202,7 +203,7 @@ func TestAdvancedDataTypeValuerAndSetter(t *testing.T) {
 	}
 
 	for k, v := range newValues {
-		if err := userSchema.FieldsByDBName[k].Set(reflectValue, v); err != nil {
+		if err := userSchema.FieldsByDBName[k].Set(context.Background(), reflectValue, v); err != nil {
 			t.Errorf("no error should happen when assign value to field %v, but got %v", k, err)
 		}
 	}
@@ -219,7 +220,7 @@ func TestAdvancedDataTypeValuerAndSetter(t *testing.T) {
 	}
 
 	for k, v := range newValues2 {
-		if err := userSchema.FieldsByDBName[k].Set(reflectValue, v); err != nil {
+		if err := userSchema.FieldsByDBName[k].Set(context.Background(), reflectValue, v); err != nil {
 			t.Errorf("no error should happen when assign value to field %v, but got %v", k, err)
 		}
 	}
@@ -244,7 +245,7 @@ func TestParseFieldWithPermission(t *testing.T) {
 		t.Fatalf("Failed to parse user with permission, got error %v", err)
 	}
 
-	fields := []schema.Field{
+	fields := []*schema.Field{
 		{Name: "ID", DBName: "id", BindNames: []string{"ID"}, DataType: schema.Uint, PrimaryKey: true, Size: 64, Creatable: true, Updatable: true, Readable: true, HasDefaultValue: true, AutoIncrement: true},
 		{Name: "Name", DBName: "", BindNames: []string{"Name"}, DataType: "", Tag: `gorm:"-"`, Creatable: false, Updatable: false, Readable: false},
 		{Name: "Name2", DBName: "name2", BindNames: []string{"Name2"}, DataType: schema.String, Tag: `gorm:"->"`, Creatable: false, Updatable: false, Readable: true},
@@ -257,6 +258,77 @@ func TestParseFieldWithPermission(t *testing.T) {
 	}
 
 	for _, f := range fields {
-		checkSchemaField(t, user, &f, func(f *schema.Field) {})
+		checkSchemaField(t, user, f, func(f *schema.Field) {})
+	}
+}
+
+type (
+	ID      int64
+	INT     int
+	INT8    int8
+	INT16   int16
+	INT32   int32
+	INT64   int64
+	UINT    uint
+	UINT8   uint8
+	UINT16  uint16
+	UINT32  uint32
+	UINT64  uint64
+	FLOAT32 float32
+	FLOAT64 float64
+	BOOL    bool
+	STRING  string
+	TIME    time.Time
+	BYTES   []byte
+
+	TypeAlias struct {
+		ID
+		INT     `gorm:"column:fint"`
+		INT8    `gorm:"column:fint8"`
+		INT16   `gorm:"column:fint16"`
+		INT32   `gorm:"column:fint32"`
+		INT64   `gorm:"column:fint64"`
+		UINT    `gorm:"column:fuint"`
+		UINT8   `gorm:"column:fuint8"`
+		UINT16  `gorm:"column:fuint16"`
+		UINT32  `gorm:"column:fuint32"`
+		UINT64  `gorm:"column:fuint64"`
+		FLOAT32 `gorm:"column:ffloat32"`
+		FLOAT64 `gorm:"column:ffloat64"`
+		BOOL    `gorm:"column:fbool"`
+		STRING  `gorm:"column:fstring"`
+		TIME    `gorm:"column:ftime"`
+		BYTES   `gorm:"column:fbytes"`
+	}
+)
+
+func TestTypeAliasField(t *testing.T) {
+	alias, err := schema.Parse(&TypeAlias{}, &sync.Map{}, schema.NamingStrategy{})
+	if err != nil {
+		t.Fatalf("Failed to parse TypeAlias with permission, got error %v", err)
+	}
+
+	fields := []*schema.Field{
+		{Name: "ID", DBName: "id", BindNames: []string{"ID"}, DataType: schema.Int, Creatable: true, Updatable: true, Readable: true, Size: 64, PrimaryKey: true, HasDefaultValue: true, AutoIncrement: true},
+		{Name: "INT", DBName: "fint", BindNames: []string{"INT"}, DataType: schema.Int, Creatable: true, Updatable: true, Readable: true, Size: 64, Tag: `gorm:"column:fint"`},
+		{Name: "INT8", DBName: "fint8", BindNames: []string{"INT8"}, DataType: schema.Int, Creatable: true, Updatable: true, Readable: true, Size: 8, Tag: `gorm:"column:fint8"`},
+		{Name: "INT16", DBName: "fint16", BindNames: []string{"INT16"}, DataType: schema.Int, Creatable: true, Updatable: true, Readable: true, Size: 16, Tag: `gorm:"column:fint16"`},
+		{Name: "INT32", DBName: "fint32", BindNames: []string{"INT32"}, DataType: schema.Int, Creatable: true, Updatable: true, Readable: true, Size: 32, Tag: `gorm:"column:fint32"`},
+		{Name: "INT64", DBName: "fint64", BindNames: []string{"INT64"}, DataType: schema.Int, Creatable: true, Updatable: true, Readable: true, Size: 64, Tag: `gorm:"column:fint64"`},
+		{Name: "UINT", DBName: "fuint", BindNames: []string{"UINT"}, DataType: schema.Uint, Creatable: true, Updatable: true, Readable: true, Size: 64, Tag: `gorm:"column:fuint"`},
+		{Name: "UINT8", DBName: "fuint8", BindNames: []string{"UINT8"}, DataType: schema.Uint, Creatable: true, Updatable: true, Readable: true, Size: 8, Tag: `gorm:"column:fuint8"`},
+		{Name: "UINT16", DBName: "fuint16", BindNames: []string{"UINT16"}, DataType: schema.Uint, Creatable: true, Updatable: true, Readable: true, Size: 16, Tag: `gorm:"column:fuint16"`},
+		{Name: "UINT32", DBName: "fuint32", BindNames: []string{"UINT32"}, DataType: schema.Uint, Creatable: true, Updatable: true, Readable: true, Size: 32, Tag: `gorm:"column:fuint32"`},
+		{Name: "UINT64", DBName: "fuint64", BindNames: []string{"UINT64"}, DataType: schema.Uint, Creatable: true, Updatable: true, Readable: true, Size: 64, Tag: `gorm:"column:fuint64"`},
+		{Name: "FLOAT32", DBName: "ffloat32", BindNames: []string{"FLOAT32"}, DataType: schema.Float, Creatable: true, Updatable: true, Readable: true, Size: 32, Tag: `gorm:"column:ffloat32"`},
+		{Name: "FLOAT64", DBName: "ffloat64", BindNames: []string{"FLOAT64"}, DataType: schema.Float, Creatable: true, Updatable: true, Readable: true, Size: 64, Tag: `gorm:"column:ffloat64"`},
+		{Name: "BOOL", DBName: "fbool", BindNames: []string{"BOOL"}, DataType: schema.Bool, Creatable: true, Updatable: true, Readable: true, Tag: `gorm:"column:fbool"`},
+		{Name: "STRING", DBName: "fstring", BindNames: []string{"STRING"}, DataType: schema.String, Creatable: true, Updatable: true, Readable: true, Tag: `gorm:"column:fstring"`},
+		{Name: "TIME", DBName: "ftime", BindNames: []string{"TIME"}, DataType: schema.Time, Creatable: true, Updatable: true, Readable: true, Tag: `gorm:"column:ftime"`},
+		{Name: "BYTES", DBName: "fbytes", BindNames: []string{"BYTES"}, DataType: schema.Bytes, Creatable: true, Updatable: true, Readable: true, Tag: `gorm:"column:fbytes"`},
+	}
+
+	for _, f := range fields {
+		checkSchemaField(t, alias, f, func(f *schema.Field) {})
 	}
 }
