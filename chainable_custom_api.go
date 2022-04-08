@@ -42,7 +42,6 @@ func (db *DB) PageLimit(pageIndex, pageSize int) (tx *DB) {
 	return
 }
 
-
 // Order specify order when retrieve records from database
 //     db.Order("name DESC")
 //     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
@@ -56,7 +55,6 @@ func (db *DB) OrderByName(orderName string, desc bool) (tx *DB) {
 	})
 	return
 }
-
 
 // Order specify order when retrieve records from database
 //     db.Order("name DESC")
@@ -201,14 +199,30 @@ func getStructFieldTagArray(v interface{}) []string {
 			continue
 		}
 		if tag != "" {
+			switch tag {
+			case "name":
+				tag = fmt.Sprintf("`%s`", tag)
+			case "describe":
+				tag = fmt.Sprintf("`%s`", tag)
+			case "status":
+				tag = fmt.Sprintf("`%s`", tag)
+			}
 			jsonArray = append(jsonArray, tag)
 			continue
 		}
 		//json,omitempty
-		data := getStructFieldTag(s.Field(i), "json")
-		if data != "" {
-			data = strings.ReplaceAll(data,",omitempty","")
-			jsonArray = append(jsonArray, data)
+		tag = getStructFieldTag(s.Field(i), "json")
+		if tag != "" {
+			tag = strings.ReplaceAll(tag, ",omitempty", "")
+			switch tag {
+			case "name":
+				tag = fmt.Sprintf("`%s`", tag)
+			case "describe":
+				tag = fmt.Sprintf("`%s`", tag)
+			case "status":
+				tag = fmt.Sprintf("`%s`", tag)
+			}
+			jsonArray = append(jsonArray, tag)
 		}
 	}
 	return jsonArray
