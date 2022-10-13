@@ -38,8 +38,9 @@ func (db *DB) PageLimit(pageIndex, pageSize int) (tx *DB) {
 }
 
 // OrderByName Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByName(orderName string, desc bool) (tx *DB) {
 	if orderName == "" {
 		return
@@ -52,8 +53,9 @@ func (db *DB) OrderByName(orderName string, desc bool) (tx *DB) {
 }
 
 // OrderByNameGbk Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByNameGbk(orderName string, desc bool) (tx *DB) {
 	if orderName == "" {
 		return
@@ -72,8 +74,9 @@ func (db *DB) OrderByNameGbk(orderName string, desc bool) (tx *DB) {
 }
 
 // OrderBy Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderBy(orderName string, desc ...bool) (tx *DB) {
 	tx = db.getInstance()
 	if orderName == "" {
@@ -91,8 +94,9 @@ func (db *DB) OrderBy(orderName string, desc ...bool) (tx *DB) {
 }
 
 // OrderByGBK specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByGBK(orderName string, desc ...bool) (tx *DB) {
 	tx = db.getInstance()
 	if orderName == "" {
@@ -112,8 +116,9 @@ func (db *DB) OrderByGBK(orderName string, desc ...bool) (tx *DB) {
 }
 
 // OrderByAsc Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByAsc(orderName string) (tx *DB) {
 	if orderName == "" {
 		return
@@ -126,8 +131,9 @@ func (db *DB) OrderByAsc(orderName string) (tx *DB) {
 }
 
 // OrderByAscGBK Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByAscGBK(orderName string) (tx *DB) {
 	if orderName == "" {
 		return
@@ -142,8 +148,9 @@ func (db *DB) OrderByAscGBK(orderName string) (tx *DB) {
 }
 
 // OrderByDesc Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByDesc(orderName string) (tx *DB) {
 	if orderName == "" {
 		return
@@ -156,8 +163,9 @@ func (db *DB) OrderByDesc(orderName string) (tx *DB) {
 }
 
 // OrderByDescGBK Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByDescGBK(orderName string) (tx *DB) {
 	if orderName == "" {
 		return
@@ -172,8 +180,9 @@ func (db *DB) OrderByDescGBK(orderName string) (tx *DB) {
 }
 
 // OrderByStruct Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByStruct(v interface{}, orderName string, desc ...bool) (tx *DB) {
 	tx = db.getInstance()
 	if orderName == "" {
@@ -195,8 +204,9 @@ func (db *DB) OrderByStruct(v interface{}, orderName string, desc ...bool) (tx *
 }
 
 // OrderByStructGBK Order specify order when retrieve records from database
-//     db.Order("name DESC")
-//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+//
+//	db.Order("name DESC")
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
 func (db *DB) OrderByStructGBK(v interface{}, orderName string, desc ...bool) (tx *DB) {
 	tx = db.getInstance()
 	if orderName == "" {
@@ -221,7 +231,7 @@ func (db *DB) OrderByStructGBK(v interface{}, orderName string, desc ...bool) (t
 // SelectByStruct Select specify fields that you want when querying, creating, updating
 func (db *DB) SelectByStruct(v interface{}, args ...interface{}) (tx *DB) {
 	tx = db.getInstance()
-	tx.Select(structToTag(v), args)
+	tx.Select(structToTag(v), args...)
 	return
 }
 
