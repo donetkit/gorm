@@ -7,6 +7,14 @@ import (
 	"strings"
 )
 
+// ScanCount scan count value to a int64
+func (db *DB) ScanCount(dest interface{}) int64 {
+	tx := db.getInstance()
+	var total int64
+	tx.Count(&total)
+	return total
+}
+
 // ScanOne Scan scan value to a struct
 func (db *DB) ScanOne(dest interface{}) (tx *DB) {
 	tx = db.getInstance()
