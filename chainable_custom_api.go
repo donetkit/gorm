@@ -8,7 +8,7 @@ import (
 )
 
 // ScanCount scan count value to a int64
-func (db *DB) ScanCount(dest interface{}) int64 {
+func (db *DB) ScanCount() int64 {
 	tx := db.getInstance()
 	var total int64
 	tx.Count(&total)
