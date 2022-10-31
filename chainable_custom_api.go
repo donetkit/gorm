@@ -60,27 +60,6 @@ func (db *DB) OrderByName(orderName string, desc bool) (tx *DB) {
 	return
 }
 
-// OrderByNameGbk Order specify order when retrieve records from database
-//
-//	db.Order("name DESC")
-//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
-func (db *DB) OrderByNameGbk(orderName string, desc bool) (tx *DB) {
-	if orderName == "" {
-		return
-	}
-	tx = db.getInstance()
-	orderTypes := "ASC"
-	if desc {
-		orderTypes = "DESC"
-	}
-	tx.Statement.AddClause(clause.OrderBy{
-		Columns: []clause.OrderByColumn{{
-			Column: clause.Column{Name: fmt.Sprintf("CONVERT(%s USING gbk) %s", orderName, orderTypes), Raw: true},
-		}},
-	})
-	return
-}
-
 // OrderByAsc Order specify order when retrieve records from database
 //
 //	db.Order("name DESC")
