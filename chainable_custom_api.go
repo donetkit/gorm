@@ -45,21 +45,6 @@ func (db *DB) PageLimit(pageIndex, pageSize int) (tx *DB) {
 	return
 }
 
-// OrderByName Order specify order when retrieve records from database
-//
-//	db.Order("name DESC")
-//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
-func (db *DB) OrderByName(orderName string, desc bool) (tx *DB) {
-	if orderName == "" {
-		return
-	}
-	tx = db.getInstance()
-	tx.Statement.AddClause(clause.OrderBy{
-		Columns: []clause.OrderByColumn{{Column: clause.Column{Name: orderName}, Desc: desc}},
-	})
-	return
-}
-
 // OrderByAsc Order specify order when retrieve records from database
 //
 //	db.Order("name DESC")
@@ -122,6 +107,52 @@ func (db *DB) OrderByDescGBK(orderName string) (tx *DB) {
 		}},
 	})
 	return
+}
+
+// OrderByStructColumn Order specify order when retrieve records from database
+//
+//	db.Order("name DESC")
+//
+// orderNames["OrderByName"]=OrderByColumn (true Desc false ASC)
+// orderNames["name"] = true (Desc)
+// orderNames["sort"] = false (ASC)
+//
+//	db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+func (db *DB) OrderByStructColumn(v interface{}, orderColumns []*OrderColumn) (tx *DB) {
+	tx = db.getInstance()
+	if len(orderColumns) <= 0 {
+		return
+	}
+	field := getStructFieldTagArray(v)
+	for _, item := range orderColumns {
+		columnName := orderByString(field, item.Name)
+		if len(columnName) <= 0 {
+			continue
+		}
+		if item.GBK {
+			orderTypes := "ASC"
+			if item.Desc {
+				orderTypes = "DESC"
+			}
+			tx.Statement.AddClause(clause.OrderBy{
+				Columns: []clause.OrderByColumn{{
+					Column: clause.Column{Name: fmt.Sprintf(" CONVERT(%s USING gbk) %s", columnName, orderTypes), Raw: true},
+				}},
+			})
+		} else {
+			tx.Statement.AddClause(clause.OrderBy{
+				Columns: []clause.OrderByColumn{{Column: clause.Column{Name: columnName}, Desc: item.Desc}},
+			})
+		}
+
+	}
+	return
+}
+
+type OrderColumn struct {
+	Name string `json:"name"` // 字段名称
+	Desc bool   `json:"desc"` // 排序类型 true Desc false ASC default ASC
+	GBK  bool   `json:"gbk"`  // 是否中文GBK排序
 }
 
 // OrderByStruct Order specify order when retrieve records from database
@@ -215,29 +246,15 @@ func getStructFieldTagArray(v interface{}) []string {
 			continue
 		}
 		if tag != "" {
-			switch tag {
-			case "name":
-				tag = fmt.Sprintf("`%s`", tag)
-			case "describe":
-				tag = fmt.Sprintf("`%s`", tag)
-			case "status":
-				tag = fmt.Sprintf("`%s`", tag)
-			}
+			tag = replaceKeyWord(tag)
 			jsonArray = append(jsonArray, tag)
 			continue
 		}
 		//json,omitempty
 		tag = getStructFieldTag(s.Field(i), "json")
-		if tag != "" {
+		if len(tag) > 0 {
 			tag = strings.ReplaceAll(tag, ",omitempty", "")
-			switch tag {
-			case "name":
-				tag = fmt.Sprintf("`%s`", tag)
-			case "describe":
-				tag = fmt.Sprintf("`%s`", tag)
-			case "status":
-				tag = fmt.Sprintf("`%s`", tag)
-			}
+			tag = replaceKeyWord(tag)
 			jsonArray = append(jsonArray, tag)
 		}
 	}
@@ -246,4 +263,16 @@ func getStructFieldTagArray(v interface{}) []string {
 
 func getStructFieldTag(f reflect.StructField, tag string) string {
 	return f.Tag.Get(tag)
+}
+
+func replaceKeyWord(tag string) string {
+	switch tag {
+	case "name":
+		tag = fmt.Sprintf("`%s`", tag)
+	case "describe":
+		tag = fmt.Sprintf("`%s`", tag)
+	case "status":
+		tag = fmt.Sprintf("`%s`", tag)
+	}
+	return tag
 }
