@@ -111,8 +111,6 @@ func (db *DB) OrderByDescGBK(orderName string) (tx *DB) {
 
 // OrderByStructColumn Order specify order when retrieve records from database
 //
-//	db.Order("name DESC")
-//
 // orderNames["OrderByName"]=OrderByColumn (true Desc false ASC)
 // orderNames["name"] = true (Desc)
 // orderNames["sort"] = false (ASC)
@@ -147,12 +145,6 @@ func (db *DB) OrderByStructColumn(v interface{}, orderColumns []*OrderColumn) (t
 
 	}
 	return
-}
-
-type OrderColumn struct {
-	Name string `json:"name"` // 字段名称
-	Desc bool   `json:"desc"` // 排序类型 true Desc false ASC default ASC
-	GBK  bool   `json:"gbk"`  // 是否中文GBK排序
 }
 
 // OrderByStruct Order specify order when retrieve records from database
@@ -275,4 +267,10 @@ func replaceKeyWord(tag string) string {
 		tag = fmt.Sprintf("`%s`", tag)
 	}
 	return tag
+}
+
+type OrderColumn struct {
+	Name string `json:"name"` // 字段名称
+	Desc bool   `json:"desc"` // 排序类型 true Desc false ASC default ASC
+	GBK  bool   `json:"gbk"`  // 是否中文GBK排序
 }
