@@ -223,6 +223,12 @@ func (db *DB) DeleteByNil() (tx *DB) {
 	return
 }
 
+// Clone get new Instance
+func (db *DB) Clone() (tx *DB) {
+	tx = db.getInstance()
+	return
+}
+
 // Struct Tag
 func structToTag(v interface{}) string {
 	jsonArray := getStructFieldTagArray(v)
